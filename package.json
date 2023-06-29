@@ -1,0 +1,26 @@
+{
+  "name": "cors_free_pass",
+  "version": "1.0.0",
+  "engines": {
+    "node": "7.9.0",
+    "npm": "4.2.0"
+  },
+  "description": "this is my fist nodejs service project",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node app.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/PVSPReddy/FreePass.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "body-parser": "^1.17.2",
+    "express": "^4.15.3",
+    "express-rate-limit": "^4.15.3",
+    "mysql": "^2.14.1"
+  }
+}

@@ -1,4 +1,5 @@
 var bodyParser = require('body-parser');
+var fetch = require('node-fetch');
 
 var appRouter = function (app, conn, server) {
   // parse application/x-www-form-urlencoded
@@ -12,12 +13,22 @@ var appRouter = function (app, conn, server) {
   });
 
   app.all('/proxy/*', async (req, res) => {
-    const { url } = req.query;
+    const { url } = req.query || req.url;
     if (!url) {
       return res.status(400).json({ error: 'Missing URL parameter' });
     }
 
     try {
+      fetch(url, { method: req.method, headers: req.headers, body: req.body })
+        .then((response) => {
+          res.writeHead(response.status, response.headers);
+          response.body.pipe(res);
+        })
+        .catch((error) => {
+          console.error('Error', error);
+          res.statusCode = 500;
+          res.end('Internal Server Error');
+        });
       res.json({
         message: 'Proxy request successful and this is a sample response',
       });

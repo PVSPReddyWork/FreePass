@@ -18,6 +18,24 @@ var port = process.env.PORT || 3000;
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
+//Enable CORS headers
+app.use((req, res, next) => {
+  //Allow requests from any origin
+  res.setHeader('Access-Control-Allow-Origin', '*');
+
+  //Allow specfic HTTP methods
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE');
+
+  //Allow specific headers
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+
+  //Allow sending cookies in cross-origin requests
+  res.setHeader('Access-Control-Allow-Credentials', 'true');
+
+  //Continue to the next middleware or route
+  next();
+});
+
 /*
 var server = app.listen(3000, function () {
     console.log("Listening on port %s...", server.address().port);

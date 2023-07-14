@@ -2,6 +2,15 @@ var express = require('express');
 var bodyParser = require('body-parser');
 var rateLimit = require('express-rate-limit');
 var cors = require('cors');
+//var fetch = require('node-fetch');
+//const fetch = (...args) => import('node-fetch').then(({default: fetch}) => fetch(...args));
+
+
+/*
+import * as express from 'express';
+import * as bodyParser from 'body-parser';
+import * as cors from 'cors';
+*/
 
 var app = express();
 
@@ -70,7 +79,44 @@ app.use(limiter);
 app.use(enforceWhitelist);
 */
 
+/*
+app.get('/', function (req, res) {
+  res.send('Hello World');
+});
+
+app.all('/proxy/*', async (req, res) => {
+  const { url } = req.query || req.url;
+  if (!url) {
+    return res.status(400).json({ error: 'Missing URL parameter' });
+  }
+
+  try {
+    fetch(url, { method: req.method, headers: req.headers, body: req.body })
+      .then((response) => {
+        res.writeHead(response.status, response.headers);
+        response.body.pipe(res);
+      })
+      .catch((error) => {
+        console.error('Error', error);
+        res.statusCode = 500;
+        res.end('Internal Server Error');
+      });
+    res.json({
+      message: 'Proxy request successful and this is a sample response',
+    });
+  } catch (ex) {
+    console.error(ex);
+    return res.status(500).json({ error: 'An error occurred' });
+  }
+});
+*/
+
+/*
 var server = app.listen(port, function () {
+  console.log('Listening on port %s...', server.address().port);
+});
+*/
+const server = app.listen(port, () => {
   console.log('Listening on port %s...', server.address().port);
 });
 

@@ -1,7 +1,12 @@
+/*
 var express = require('express');
 var bodyParser = require('body-parser');
 var rateLimit = require('express-rate-limit');
 var cors = require('cors');
+*/
+import * as express from 'express';
+import * as bodyParser from 'body-parser';
+import * as cors from 'cors';
 
 var app = express();
 

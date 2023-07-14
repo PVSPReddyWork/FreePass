@@ -1,7 +1,12 @@
+/*
 var bodyParser = require('body-parser');
 var fetch = require('node-fetch');
+*/
 
-var appRouter = function (app, conn, server) {
+import * as fetch from 'node-fetch';
+import * as bodyParser from 'body-parser';
+
+export const appRouter = function (app, conn, server) {
   // parse application/x-www-form-urlencoded
   // app.use(bodyParser.urlencoded({ extended: false }))
 
@@ -38,5 +43,5 @@ var appRouter = function (app, conn, server) {
     }
   });
 };
-module.exports = appRouter;
+//module.exports = appRouter;
 //http://localhost:3000/account?username=nraboy

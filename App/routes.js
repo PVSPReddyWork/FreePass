@@ -1,12 +1,15 @@
-/*
-var bodyParser = require('body-parser');
-var fetch = require('node-fetch');
-*/
 
+var bodyParser = require('body-parser');
+//var fetch = require('node-fetch');
+const fetch = (...args) => import('node-fetch').then(({default: fetch}) => fetch(...args));
+
+
+/*
 import * as fetch from 'node-fetch';
 import * as bodyParser from 'body-parser';
+*/
 
-export const appRouter = function (app, conn, server) {
+const appRouter = function (app, conn, server) {
   // parse application/x-www-form-urlencoded
   // app.use(bodyParser.urlencoded({ extended: false }))
 
@@ -43,5 +46,5 @@ export const appRouter = function (app, conn, server) {
     }
   });
 };
-//module.exports = appRouter;
+module.exports = appRouter;
 //http://localhost:3000/account?username=nraboy

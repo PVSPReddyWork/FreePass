@@ -31,7 +31,18 @@ const appRouter = function (app, conn, server) {
         .then((response) => {
           res.writeHead(response.status, response.headers);
           response.body.pipe(res);
-        })
+          res.send(response);
+          //return response.json();
+        })/*.then((responseJSON) => {
+          console.log(responseJSON);
+          if (responseJSON.status_code === 200 || responseJSON.status_code === 201) {
+            res.status(200).json({
+              data: responseJSON.response_data,
+              error: null,
+              message: 'Proxy request successful and obtained data from server',
+            });
+          }
+        })*/
         .catch((error) => {
           console.error('Error', error);
           res.statusCode = 500;

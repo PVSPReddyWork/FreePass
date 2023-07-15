@@ -22,13 +22,14 @@ const appRouter = function (app, conn, server) {
 
   app.all('/proxy/*', async (req, res) => {
     try {
+      let body = JSON.parse(JSON.stringify(req.body));
       console.log("working 1");
-      const { url } = req.query || req.body.url;
+      const { url } = req.query || body.url;
       if (!url) {
         return res.status(400).json({ error: 'Missing URL parameter' });
     }
     /*
-    var _response = await fetch(url, {method: req.body.method, headers: req.body.headers, body: req.body.body});
+    var _response = await fetch(url, {method: body.method, headers: body.headers, body: body.body});
     res.status(201).json({
       message: "",
       data: _response.json(),
@@ -36,24 +37,65 @@ const appRouter = function (app, conn, server) {
     });
     */
     console.log('working 2');
+    //let body = JSON.parse(JSON.stringify(body));
+    let params = {};
+    if(body.method !== null && body.method !== undefined){
+      if(body.method === 'POST'){
+      params = {
+        method: body.method, 
+        headers: { ...body.headers, }, 
+        body: body.body
+      }
+      }
+      else if(body.method === 'GET'){
+        params = {
+          method: body.method,
+          headers: body.headers
+        }
+      }
+      else{}
+    }
+    console.log(`${url}\n${JSON.stringify(params)}`);
+     /*
+    var proxyRes = await fetch(url, {...params});
+    //res.writeHead(proxyRes.status, proxyRes.headers);
+    proxyRes.on('data', (chunk)=>{
+      res.write(chunk);
+    });
+    proxyRes.on('end', ()=>{
+      res.end();
+    });
+    */
     /**/
-    fetch(url, { 
-        method: req.body.method, 
-        headers: { ...req.body.headers, }, 
-        body: req.body.body })
+    fetch(url, { ...params })
         .then((response) => {
           /*
+          response.on('data', (chunk) => {
+            console.log("working 4");
+            res.write(chunk);//forward data to client
+          });
+          response.on('end', () =>{
+            console.log('working 5');
+            res.end();//end data stream
+          });/**/
+          /**/
           res.writeHead(response.status, response.headers);
           response.body.pipe(res);
-          res.send(response);
-          */
+          //res.send(response);
+          /**/
          console.log("working 3");
-         res.status(201).json({resp: JSON.stringify(response)});
+         //res.status(201).json({resp: response});
           //return response.json();/
-        })
+        })/** /
         .then((responseJSON) => {
           console.log("Working 4");
           console.log(responseJSON);
+          res.status(200).json({
+              data: responseJSON,
+              error: null,
+              message: 'Proxy request successful and obtained data from server',
+            });
+            /** /
           if (responseJSON.status_code === 200 || responseJSON.status_code === 201) {
             console.log("working 5");
             res.status(200).json({
@@ -61,8 +103,10 @@ const appRouter = function (app, conn, server) {
               error: null,
               message: 'Proxy request successful and obtained data from server',
             });
+            
             console.log("working 7");
           }
+          /** /
         })/**/
         .catch((error) => {
           console.error('Error', error);
@@ -73,7 +117,7 @@ const appRouter = function (app, conn, server) {
 
     /*
     let _body = '';
-      console.log(`${url}\n${JSON.stringify(req.body)}`);
+      console.log(`${url}\n${JSON.stringify(body)}`);
     req.on('data', (chunk) => {
       console.log(`started ${chunk}`);
       _body += chunk;
@@ -89,7 +133,7 @@ const appRouter = function (app, conn, server) {
           "origin": "https://freepass.cyclic.app/",
           "referer": "https://freepass.cyclic.app/",
         }, 
-        body: req.body })
+        body: body })
         .then((response) => {
           res.writeHead(response.status, response.headers);
           response.body.pipe(res);

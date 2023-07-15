@@ -21,13 +21,75 @@ const appRouter = function (app, conn, server) {
   });
 
   app.all('/proxy/*', async (req, res) => {
-    const { url } = req.query || req.url;
-    if (!url) {
-      return res.status(400).json({ error: 'Missing URL parameter' });
-    }
-
     try {
-      fetch(url, { method: req.method, headers: req.headers, body: req.body })
+      console.log("working 1");
+      const { url } = req.query || req.body.url;
+      if (!url) {
+        return res.status(400).json({ error: 'Missing URL parameter' });
+    }
+    /*
+    var _response = await fetch(url, {method: req.body.method, headers: req.body.headers, body: req.body.body});
+    res.status(201).json({
+      message: "",
+      data: _response.json(),
+      error: null
+    });
+    */
+    console.log('working 2');
+    /**/
+    fetch(url, { 
+        method: req.body.method, 
+        headers: { ...req.body.headers, }, 
+        body: req.body.body })
+        .then((response) => {
+          /*
+          res.writeHead(response.status, response.headers);
+          response.body.pipe(res);
+          res.send(response);
+          */
+         console.log("working 3");
+         res.status(201).json({resp: JSON.stringify(response)});
+          //return response.json();/
+        })
+        .then((responseJSON) => {
+          console.log("Working 4");
+          console.log(responseJSON);
+          if (responseJSON.status_code === 200 || responseJSON.status_code === 201) {
+            console.log("working 5");
+            res.status(200).json({
+              data: responseJSON.response_data,
+              error: null,
+              message: 'Proxy request successful and obtained data from server',
+            });
+            console.log("working 7");
+          }
+        })/**/
+        .catch((error) => {
+          console.error('Error', error);
+          res.statusCode = 500;
+          res.end('Internal Server Error');
+        });
+        /**/
+
+    /*
+    let _body = '';
+      console.log(`${url}\n${JSON.stringify(req.body)}`);
+    req.on('data', (chunk) => {
+      console.log(`started ${chunk}`);
+      _body += chunk;
+    });
+    req.on('end', async()=>{
+      console.log(`${url}\n${JSON.stringify(_body)}`);
+      const _response = await fetch(url, {method: _body.method, headers: {..._body.headers}, body: _body.body})
+      /*
+       const _response = await fetch(url, { 
+        method: req.method, 
+        headers: {
+          ...req.headers,
+          "origin": "https://freepass.cyclic.app/",
+          "referer": "https://freepass.cyclic.app/",
+        }, 
+        body: req.body })
         .then((response) => {
           res.writeHead(response.status, response.headers);
           response.body.pipe(res);
@@ -42,15 +104,21 @@ const appRouter = function (app, conn, server) {
               message: 'Proxy request successful and obtained data from server',
             });
           }
-        })*/
+        })* /
         .catch((error) => {
           console.error('Error', error);
           res.statusCode = 500;
           res.end('Internal Server Error');
         });
+        * /
+      console.log(_response);
+    });
+    */
+        /*
       res.json({
         message: 'Proxy request successful and this is a sample response',
       });
+      */
     } catch (ex) {
       console.error(ex);
       return res.status(500).json({ error: 'An error occurred' });

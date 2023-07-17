@@ -27,9 +27,9 @@ var port = process.env.PORT || 3010;
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
-app.use(cors());
-/*
-Applying cors manually not worked
+//app.use(cors());
+/**/
+//Applying cors manually not worked
 //Enable CORS headers
 app.use((req, res, next) => {
   //Allow requests from any origin
@@ -47,7 +47,7 @@ app.use((req, res, next) => {
   //Continue to the next middleware or route
   next();
 });
-*/
+/**/
 
 /*
 var server = app.listen(3000, function () {

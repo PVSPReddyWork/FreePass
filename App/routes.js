@@ -1,8 +1,8 @@
-
 var bodyParser = require('body-parser');
+//const { response } = require('express');
 //var fetch = require('node-fetch');
-const fetch = (...args) => import('node-fetch').then(({default: fetch}) => fetch(...args));
-
+const fetch = (...args) =>
+  import('node-fetch').then(({ default: fetch }) => fetch(...args));
 
 /*
 import * as fetch from 'node-fetch';
@@ -22,6 +22,72 @@ const appRouter = function (app, conn, server) {
 
   app.all('/proxy/*', async (req, res) => {
     try {
+      var _body = '';
+
+      req.on('data', (chunk) => {
+        _body += chunk;
+      });
+
+      req.on('end', () => {
+        try{
+        const body = JSON.parse(_body);
+        //console.log(body);
+        const { url } = req.query || body.url;
+        if (!url) {
+          return res.status(400).json({ error: 'Missing URL parameter' });
+        }
+
+        let params = {};
+        if (body.method !== null && body.method !== undefined) {
+          if (body.method === 'POST') {
+            params = {
+              method: body.method,
+              headers: { ...body.headers },
+              body: JSON.stringify(body.body),
+            };
+          } else if (body.method === 'GET') {
+            params = {
+              method: body.method,
+              headers: body.headers,
+            };
+          } else {
+          }
+        }
+
+        //console.log(`${url}\n${JSON.stringify(params)}`);
+        //console.log(JSON.stringify(params));
+        fetch(url, { ...params })
+          .then((response) => {
+            //return response.text();
+            ///console.log(eref);
+            res.writeHead(response.status, response.headers);
+            response.body.pipe(res);
+            //return response.text();
+          })
+          /*
+          .then((textres) =>{
+            console.log(textres);
+            res.send(textres);
+          })*/
+          .catch((error) => {
+            console.error('Error', error);
+            res.statusCode = 500;
+            res.end('Internal Server Error');
+          });
+        }catch(ex){
+      console.error(ex);
+      return res.status(500).json({ error: 'An error occurred' });
+        }
+      });
+    } catch (ex) {
+      console.error(ex);
+      return res.status(500).json({ error: 'An error occurred' });
+    }
+  });
+
+  /*
+  app.all('/proxy/*', async (req, res) => {
+    try {
       let body = JSON.parse(JSON.stringify(req.body));
       console.log("working 1");
       const { url } = req.query || body.url;
@@ -35,7 +101,7 @@ const appRouter = function (app, conn, server) {
       data: _response.json(),
       error: null
     });
-    */
+    * /
     console.log('working 2');
     //let body = JSON.parse(JSON.stringify(body));
     let params = {};
@@ -66,7 +132,7 @@ const appRouter = function (app, conn, server) {
       res.end();
     });
     */
-    /**/
+  /** /
     fetch(url, { ...params })
         .then((response) => {
           /*
@@ -77,12 +143,12 @@ const appRouter = function (app, conn, server) {
           response.on('end', () =>{
             console.log('working 5');
             res.end();//end data stream
-          });/**/
-          /**/
+          });/** /
+          /** /
           res.writeHead(response.status, response.headers);
           response.body.pipe(res);
           //res.send(response);
-          /**/
+          /** /
          console.log("working 3");
          //res.status(201).json({resp: response});
           //return response.json();/
@@ -107,7 +173,7 @@ const appRouter = function (app, conn, server) {
             console.log("working 7");
           }
           /** /
-        })/**/
+        })/** /
         .catch((error) => {
           console.error('Error', error);
           res.statusCode = 500;
@@ -115,7 +181,7 @@ const appRouter = function (app, conn, server) {
         });
         /**/
 
-    /*
+  /*
     let _body = '';
       console.log(`${url}\n${JSON.stringify(body)}`);
     req.on('data', (chunk) => {
@@ -158,33 +224,36 @@ const appRouter = function (app, conn, server) {
       console.log(_response);
     });
     */
-        /*
+  /*
       res.json({
         message: 'Proxy request successful and this is a sample response',
       });
-      */
+      * /
     } catch (ex) {
       console.error(ex);
       return res.status(500).json({ error: 'An error occurred' });
     }
   });
-
-  
+  */
 
   app.get('/test/', async (req, res) => {
     try {
-      const googleProductionDeploymentID = 'AKfycbyEfXxKDSAOgZXPRFvi1k7MTFEbD57VfwH1Ppxm11d28vc6i33W4KkUNof21S54L_1x';// 'AKfycby64Npo8TfLUUnq7cCAScD6mAo0Hl4QLjdx8_GCaanzE5fcZLML6CA0';
-      const mainURL ='https://script.google.com/macros/s/'+googleProductionDeploymentID+'/exec';
-      const PostGetAvailableMonthlyExpenseData ='?Contenttype=application/json&userRequest=getDatabyMonth';
+      const googleProductionDeploymentID = 'AKfycbyiAY44kux44qB-Vn-I_xuJ8sDEq0LFjWrw8m5NYrcUE3tdKT-qajG-Ul45Yo1CfsDc';//'AKfycbyEfXxKDSAOgZXPRFvi1k7MTFEbD57VfwH1Ppxm11d28vc6i33W4KkUNof21S54L_1x'; // 'AKfycby64Npo8TfLUUnq7cCAScD6mAo0Hl4QLjdx8_GCaanzE5fcZLML6CA0';
+      const mainURL =
+        'https://script.google.com/macros/s/' +
+        googleProductionDeploymentID +
+        '/exec';
+      const PostGetAvailableMonthlyExpenseData =
+        '?Contenttype=application/json&userRequest=getDatabyMonth';
 
-      url=`${mainURL}${PostGetAvailableMonthlyExpenseData}`;
+      url = `${mainURL}${PostGetAvailableMonthlyExpenseData}`;
       const postData = {
         method: 'POST',
         body: {
           method_name: 'getDatabyMonth',
           service_request_data: {
-            month: "July",
-            year: "2023",
+            month: 'July',
+            year: '2023',
           },
         },
         headers: {
@@ -199,7 +268,7 @@ const appRouter = function (app, conn, server) {
       fetch(url, {
         method: 'POST',
         headers: {
-          ...postData.headers
+          ...postData.headers,
           /*
           Accept: '* /*',
           'Access-Control-Allow-Origin': '*',
@@ -215,7 +284,10 @@ const appRouter = function (app, conn, server) {
         })
         .then((responseJSON) => {
           console.log(responseJSON);
-          if (responseJSON.status_code === 200 || responseJSON.status_code === 201) {
+          if (
+            responseJSON.status_code === 200 ||
+            responseJSON.status_code === 201
+          ) {
             res.status(200).json({
               data: responseJSON.response_data,
               error: null,
@@ -227,19 +299,18 @@ const appRouter = function (app, conn, server) {
           console.error(ex);
           res.status(400).json({
             error: ex,
-            message: 'Proxy request successful and this service has been failed',
+            message:
+              'Proxy request successful and this service has been failed',
           });
         });
     } catch (ex) {
       console.error(ex);
-      return res.status(500).json({ 
-          error: ex,
-          message: "Server error"
+      return res.status(500).json({
+        error: ex,
+        message: 'Server error',
       });
     }
   });
-
-
 };
 module.exports = appRouter;
 //http://localhost:3000/account?username=nraboy

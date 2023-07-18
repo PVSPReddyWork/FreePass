@@ -1,4 +1,5 @@
 var bodyParser = require('body-parser');
+//const { response } = require('express');
 //var fetch = require('node-fetch');
 const fetch = (...args) =>
   import('node-fetch').then(({ default: fetch }) => fetch(...args));
@@ -28,8 +29,9 @@ const appRouter = function (app, conn, server) {
       });
 
       req.on('end', () => {
+        try{
         const body = JSON.parse(_body);
-
+        //console.log(body);
         const { url } = req.query || body.url;
         if (!url) {
           return res.status(400).json({ error: 'Missing URL parameter' });
@@ -41,7 +43,7 @@ const appRouter = function (app, conn, server) {
             params = {
               method: body.method,
               headers: { ...body.headers },
-              body: body.body,
+              body: JSON.stringify(body.body),
             };
           } else if (body.method === 'GET') {
             params = {
@@ -53,17 +55,29 @@ const appRouter = function (app, conn, server) {
         }
 
         //console.log(`${url}\n${JSON.stringify(params)}`);
-
+        //console.log(JSON.stringify(params));
         fetch(url, { ...params })
           .then((response) => {
+            //return response.text();
+            ///console.log(eref);
             res.writeHead(response.status, response.headers);
             response.body.pipe(res);
+            //return response.text();
           })
+          /*
+          .then((textres) =>{
+            console.log(textres);
+            res.send(textres);
+          })*/
           .catch((error) => {
             console.error('Error', error);
             res.statusCode = 500;
             res.end('Internal Server Error');
           });
+        }catch(ex){
+      console.error(ex);
+      return res.status(500).json({ error: 'An error occurred' });
+        }
       });
     } catch (ex) {
       console.error(ex);
@@ -224,8 +238,7 @@ const appRouter = function (app, conn, server) {
 
   app.get('/test/', async (req, res) => {
     try {
-      const googleProductionDeploymentID =
-        'AKfycbyEfXxKDSAOgZXPRFvi1k7MTFEbD57VfwH1Ppxm11d28vc6i33W4KkUNof21S54L_1x'; // 'AKfycby64Npo8TfLUUnq7cCAScD6mAo0Hl4QLjdx8_GCaanzE5fcZLML6CA0';
+      const googleProductionDeploymentID = 'AKfycbyiAY44kux44qB-Vn-I_xuJ8sDEq0LFjWrw8m5NYrcUE3tdKT-qajG-Ul45Yo1CfsDc';//'AKfycbyEfXxKDSAOgZXPRFvi1k7MTFEbD57VfwH1Ppxm11d28vc6i33W4KkUNof21S54L_1x'; // 'AKfycby64Npo8TfLUUnq7cCAScD6mAo0Hl4QLjdx8_GCaanzE5fcZLML6CA0';
       const mainURL =
         'https://script.google.com/macros/s/' +
         googleProductionDeploymentID +

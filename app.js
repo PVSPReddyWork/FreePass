@@ -5,7 +5,6 @@ var cors = require('cors');
 //var fetch = require('node-fetch');
 //const fetch = (...args) => import('node-fetch').then(({default: fetch}) => fetch(...args));
 
-
 /*
 import * as express from 'express';
 import * as bodyParser from 'body-parser';
@@ -13,6 +12,10 @@ import * as cors from 'cors';
 */
 
 var app = express();
+
+//increasing time out for server response
+const timeoutValue = 4 * 60 * 1000;
+app.timeout = timeoutValue;
 
 /*
 // configure app to use bodyParser()
